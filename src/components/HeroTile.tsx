@@ -41,10 +41,7 @@ export default function HeroTile() {
       </div>
 
       <div className="relative z-10 p-6 lg:p-10 mb-8 lg:mb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="w-8 h-[2px] bg-[var(--foreground)]"></span>
-          <p className="text-xs font-bold tracking-[0.2em] uppercase">Good morning</p>
-        </div>
+        {/* Removed GOOD MORNING label */}
         
         <div className="overflow-hidden">
           <motion.h1
@@ -67,14 +64,7 @@ export default function HeroTile() {
           </motion.h1>
         </div>
 
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="text-base text-[var(--muted)] max-w-sm font-medium leading-relaxed"
-        >
-          Your learning trajectory is currently performing <strong className="text-[var(--foreground)]">24% above</strong> the community average.
-        </motion.p>
+        {/* Removed paragraph text */}
       </div>
 
       <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-[1px] bg-[var(--card-border)] border-t border-[var(--card-border)]">
