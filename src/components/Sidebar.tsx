@@ -13,9 +13,10 @@ const navItems = [
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (id: string) => void;
+  onLogout: () => void;
 }
 
-export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
+export default function Sidebar({ activeTab, setActiveTab, onLogout }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -61,7 +62,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </nav>
 
         <nav className="flex flex-col gap-2 pt-4 border-t border-[var(--card-border)] mt-auto">
-          <button className="flex items-center justify-center lg:justify-start gap-4 p-3 lg:px-4 lg:py-3 rounded-xl text-[var(--muted)] hover:text-red-400 transition-colors text-left w-full group" title="Log out">
+          <button onClick={onLogout} className="flex items-center justify-center lg:justify-start gap-4 p-3 lg:px-4 lg:py-3 rounded-xl text-[var(--muted)] hover:text-red-400 transition-colors text-left w-full group" title="Log out">
             <LogOut size={22} className="shrink-0" />
             <span className="hidden lg:block text-[15px]">Log out</span>
           </button>
