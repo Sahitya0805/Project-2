@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -9,19 +8,18 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "LearnUI — Dashboard",
-  description: "Track your learning progress",
+  title: "LearnUI — Next-Gen Learning",
+  description: "Hardware-accelerated education platform prototype",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${outfit.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+    // Forced dark mode on html tag
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${outfit.variable} antialiased selection:bg-[var(--accent)] selection:text-white`}>
+        {children}
       </body>
     </html>
   );
