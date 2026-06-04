@@ -7,79 +7,57 @@ import HeroTile from "./HeroTile";
 import CourseCard from "./CourseCard";
 import ActivityTile from "./ActivityTile";
 import { Course } from "@/types/course";
-import { Search, Bell, SlidersHorizontal } from "lucide-react";
 
-const container = {
+const stagger = {
   hidden: {},
   show: { transition: { staggerChildren: 0.1 } },
 };
-
-function TopBar() {
-  return (
-    <div className="flex items-center gap-3 mb-6 lg:mb-8">
-      <div className="relative flex-1 max-w-sm">
-        <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600" />
-        <input
-          type="text"
-          placeholder="Search courses..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-zinc-200/80 dark:border-white/[0.06] text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-violet-500/30 backdrop-blur-xl transition-all"
-        />
-      </div>
-      <button className="w-10 h-10 rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-zinc-200/80 dark:border-white/[0.06] backdrop-blur-xl flex items-center justify-center text-zinc-500 dark:text-zinc-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-        <SlidersHorizontal size={16} />
-      </button>
-      <button className="relative w-10 h-10 rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-zinc-200/80 dark:border-white/[0.06] backdrop-blur-xl flex items-center justify-center text-zinc-500 dark:text-zinc-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-        <Bell size={16} />
-        <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-violet-500 border-2 border-background" />
-      </button>
-    </div>
-  );
-}
 
 export default function BentoGrid({ courses }: { courses: Course[] }) {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <main className="flex min-h-screen bg-background text-foreground">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] rounded-full bg-violet-500/5 dark:bg-violet-500/5 blur-[100px]" />
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-500/5 dark:bg-indigo-500/5 blur-[80px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-cyan-500/[0.02] dark:bg-cyan-500/[0.02] blur-[120px]" />
+    <div className="flex min-h-screen relative overflow-hidden">
+      {/* Global SVG Background - Dotted "Blueprint" pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.4] dark:opacity-[0.15] z-0">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dot-pattern" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.5" fill="currentColor" className="text-[var(--muted)]" />
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#dot-pattern)" />
+        </svg>
       </div>
 
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="flex-1 relative z-10 min-w-0">
-        <section className="p-4 md:p-6 lg:p-8 pb-28 lg:pb-8 w-full max-w-7xl mx-auto">
+      <main className="flex-1 min-w-0 pb-24 lg:pb-0 relative z-10">
+        <div className="p-4 md:p-6 lg:p-10 max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             {activeTab === "dashboard" && (
               <motion.div
                 key="dashboard"
-                variants={container}
+                variants={stagger}
                 initial="hidden"
                 animate="show"
-                exit={{ opacity: 0, y: -15, transition: { duration: 0.15 } }}
+                exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+                className="space-y-6"
               >
-                <TopBar />
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 auto-rows-min">
-                  <motion.div
-                    variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } }}
-                    className="md:col-span-2"
-                  >
-                    <HeroTile />
-                  </motion.div>
+                <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
+                  <HeroTile />
+                </motion.div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   <motion.div
-                    variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } }}
-                    className="md:col-span-2 xl:col-span-1"
+                    variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
+                    className="md:col-span-2 xl:col-span-1 xl:row-span-2"
                   >
                     <ActivityTile />
                   </motion.div>
 
                   {courses.map((course) => (
-                    <div key={course.id} className="min-h-[240px]">
-                      <CourseCard course={course} />
-                    </div>
+                    <CourseCard key={course.id} course={course} />
                   ))}
                 </div>
               </motion.div>
@@ -88,29 +66,26 @@ export default function BentoGrid({ courses }: { courses: Course[] }) {
             {activeTab === "courses" && (
               <motion.div
                 key="courses"
-                variants={container}
+                variants={stagger}
                 initial="hidden"
                 animate="show"
-                exit={{ opacity: 0, y: -15, transition: { duration: 0.15 } }}
+                exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
               >
-                <TopBar />
-                <motion.div
-                  variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
-                  className="mb-6"
-                >
-                  <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">All Courses</h1>
-                  <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-1 font-medium">{courses.length * 2} courses available</p>
+                <motion.div variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }} className="mb-8">
+                  <h1 className="text-4xl font-black tracking-tight">Course Library</h1>
+                  <p className="text-base font-medium text-[var(--muted)] mt-2">
+                    <span className="text-[var(--foreground)] font-bold">{courses.length * 2}</span> courses currently available for you.
+                  </p>
                 </motion.div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {courses.map((course) => (
-                    <div key={course.id} className="min-h-[240px]">
-                      <CourseCard course={course} />
-                    </div>
+                    <CourseCard key={course.id} course={course} />
                   ))}
                   {courses.map((course) => (
-                    <div key={`${course.id}-b`} className="min-h-[240px]">
-                      <CourseCard course={{ ...course, id: `${course.id}-b`, title: `${course.title} — Advanced`, progress: Math.max(0, course.progress - 45) }} />
-                    </div>
+                    <CourseCard
+                      key={`${course.id}-adv`}
+                      course={{ ...course, id: `${course.id}-adv`, title: `${course.title} — Masterclass`, progress: Math.max(0, course.progress - 50) }}
+                    />
                   ))}
                 </div>
               </motion.div>
@@ -119,51 +94,43 @@ export default function BentoGrid({ courses }: { courses: Course[] }) {
             {activeTab === "settings" && (
               <motion.div
                 key="settings"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15, transition: { duration: 0.15 } }}
+                exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
                 className="max-w-2xl"
               >
-                <div className="mb-8">
-                  <h1 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">Settings</h1>
-                  <p className="text-zinc-500 dark:text-zinc-500 text-sm mt-1 font-medium">Manage your profile and preferences</p>
-                </div>
+                <h1 className="text-4xl font-black tracking-tight mb-8">Account Settings</h1>
 
-                <div className="space-y-4">
-                  <div className="rounded-3xl p-6 bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-zinc-200/80 dark:border-white/[0.06] shadow-xl shadow-zinc-200/40 dark:shadow-black/30">
-                    <h3 className="text-sm font-black text-zinc-900 dark:text-white mb-4 uppercase tracking-widest">Profile</h3>
-                    <div className="flex items-center gap-4">
-                      <div className="relative">
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-violet-500/30">S</div>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-400 border-2 border-background flex items-center justify-center">
-                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                        </div>
+                <div className="space-y-6">
+                  <div className="relative rounded-2xl border-2 border-[var(--card-border)] bg-[var(--card)] p-6 lg:p-8 overflow-hidden group">
+                    <h3 className="font-black text-lg mb-6 relative z-10">Public Profile</h3>
+                    <div className="flex items-center gap-6 relative z-10">
+                      <div className="w-16 h-16 rounded-[16px] bg-[var(--accent)] text-white flex items-center justify-center font-black text-2xl transform -rotate-6 group-hover:rotate-0 transition-transform shadow-lg">S</div>
+                      <div className="flex-1">
+                        <p className="font-black text-xl mb-1">Sahitya</p>
+                        <p className="text-sm font-semibold text-[var(--muted)]">sahitya@example.com</p>
                       </div>
-                      <div>
-                        <p className="font-bold text-zinc-900 dark:text-white">Sahitya</p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-500">sahitya@example.com</p>
-                      </div>
-                      <button className="ml-auto px-4 py-2 rounded-xl bg-violet-600 text-white text-sm font-bold hover:bg-violet-700 transition-colors shadow-lg shadow-violet-500/20">
-                        Edit
+                      <button className="px-5 py-2.5 text-sm font-bold rounded-xl border-2 border-[var(--foreground)] bg-[var(--foreground)] text-[var(--background)] hover:bg-transparent hover:text-[var(--foreground)] transition-all">
+                        Edit Profile
                       </button>
                     </div>
                   </div>
 
-                  <div className="rounded-3xl p-6 bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-zinc-200/80 dark:border-white/[0.06] shadow-xl shadow-zinc-200/40 dark:shadow-black/30">
-                    <h3 className="text-sm font-black text-zinc-900 dark:text-white mb-4 uppercase tracking-widest">Preferences</h3>
-                    <div className="space-y-4">
+                  <div className="rounded-2xl border-2 border-[var(--card-border)] bg-[var(--card)] p-6 lg:p-8">
+                    <h3 className="font-black text-lg mb-6">Notifications</h3>
+                    <div className="space-y-5">
                       {[
-                        { label: "Email Notifications", desc: "Receive course updates via email", on: true },
-                        { label: "Weekly Report", desc: "Get a learning summary every Monday", on: false },
-                        { label: "Achievement Alerts", desc: "Notify me when I earn badges", on: true },
-                      ].map((item) => (
-                        <div key={item.label} className="flex items-center justify-between py-1">
+                        { label: "Email updates", desc: "Course progress and reminders", on: true },
+                        { label: "Weekly digest", desc: "Summary every Monday", on: false },
+                        { label: "Achievement alerts", desc: "Badge and milestone notifications", on: true },
+                      ].map((pref) => (
+                        <div key={pref.label} className="flex items-center justify-between pb-5 border-b border-dashed border-[var(--card-border)] last:border-0 last:pb-0">
                           <div>
-                            <p className="text-sm font-semibold text-zinc-900 dark:text-white">{item.label}</p>
-                            <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-0.5">{item.desc}</p>
+                            <p className="text-base font-bold mb-1">{pref.label}</p>
+                            <p className="text-sm font-medium text-[var(--muted)]">{pref.desc}</p>
                           </div>
-                          <div className={`w-10 h-6 rounded-full relative cursor-pointer transition-colors ${item.on ? "bg-violet-600" : "bg-zinc-200 dark:bg-white/10"}`}>
-                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all ${item.on ? "left-5" : "left-1"}`} />
+                          <div className={`w-12 h-6 rounded-full relative cursor-pointer border-2 border-[var(--foreground)] ${pref.on ? "bg-[var(--foreground)]" : "bg-transparent"}`}>
+                            <div className={`absolute top-0.5 w-4 h-4 bg-[var(--background)] rounded-full transition-all ${pref.on ? "left-[22px]" : "left-[2px] bg-[var(--foreground)]"}`} />
                           </div>
                         </div>
                       ))}
@@ -173,8 +140,8 @@ export default function BentoGrid({ courses }: { courses: Course[] }) {
               </motion.div>
             )}
           </AnimatePresence>
-        </section>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   );
 }

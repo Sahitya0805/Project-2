@@ -3,50 +3,29 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-outfit);
 }
 
 :root {
-  --background: #f0f2ff;
-  --foreground: #09090b;
+  --background: #fafafa;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-border: #e5e5e5;
+  --muted: #737373;
+  --accent: #f97316;
 }
 
 .dark {
-  --background: #030307;
-  --foreground: #f0f0ff;
-}
-
-* {
-  box-sizing: border-box;
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #141414;
+  --card-border: #262626;
+  --muted: #737373;
+  --accent: #fb923c;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, sans-serif;
-}
-
-@keyframes gradient-x {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
-}
-
-@keyframes scan {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
-.animate-gradient-x {
-  background-size: 200% 200%;
-  animation: gradient-x 4s ease infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }

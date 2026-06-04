@@ -1,135 +1,101 @@
 "use client";
 
-import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
-import { Code, Rocket, Network, FileCode, LucideIcon, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Code, Rocket, Network, FileCode, LucideIcon, ArrowRight } from "lucide-react";
 import { Course } from "@/types/course";
-import { MouseEvent } from "react";
 
 const icons: Record<string, LucideIcon> = { Code, Rocket, Network, FileCode };
 
-const iconColors: Record<string, { text: string; bg: string; glow: string }> = {
-  Code:     { text: "text-violet-500", bg: "bg-violet-500/10", glow: "rgba(139,92,246,0.5)" },
-  Rocket:   { text: "text-cyan-500",   bg: "bg-cyan-500/10",   glow: "rgba(6,182,212,0.5)"  },
-  Network:  { text: "text-indigo-500", bg: "bg-indigo-500/10", glow: "rgba(99,102,241,0.5)" },
-  FileCode: { text: "text-fuchsia-500",bg: "bg-fuchsia-500/10",glow: "rgba(217,70,239,0.5)" },
+const colors: Record<string, string> = {
+  Code: "bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400 border-orange-200 dark:border-orange-500/30",
+  Rocket: "bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 border-blue-200 dark:border-blue-500/30",
+  Network: "bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400 border-green-200 dark:border-green-500/30",
+  FileCode: "bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 border-purple-200 dark:border-purple-500/30",
+};
+
+const barColors: Record<string, string> = {
+  Code: "bg-orange-500",
+  Rocket: "bg-blue-500",
+  Network: "bg-green-500",
+  FileCode: "bg-purple-500",
 };
 
 const item = {
-  hidden: { opacity: 0, y: 40, scale: 0.92 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: "spring" as const, stiffness: 280, damping: 22 },
-  },
+  hidden: { opacity: 0, scale: 0.95 },
+  show: { opacity: 1, scale: 1, transition: { type: "spring" as const, stiffness: 300, damping: 24 } },
 };
 
 export default function CourseCard({ course }: { course: Course }) {
   const Icon = icons[course.icon_name] || Code;
-  const color = iconColors[course.icon_name] || iconColors.Code;
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const rotateX = useSpring(useMotionValue(0), { stiffness: 500, damping: 35 });
-  const rotateY = useSpring(useMotionValue(0), { stiffness: 500, damping: 35 });
-
-  function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
-    const { left, top, width, height } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-    rotateX.set(((clientY - top) / height - 0.5) * -20);
-    rotateY.set(((clientX - left) / width - 0.5) * 20);
-  }
-
-  function handleMouseLeave() {
-    rotateX.set(0);
-    rotateY.set(0);
-  }
-
-  const progressRing = 2 * Math.PI * 22;
-  const progressOffset = progressRing - (course.progress / 100) * progressRing;
+  const iconColor = colors[course.icon_name] || colors.Code;
+  const barColor = barColors[course.icon_name] || barColors.Code;
 
   return (
-    <motion.article
+    <motion.div
       variants={item}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="relative rounded-3xl p-6 h-full flex flex-col bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-zinc-200/80 dark:border-white/[0.06] shadow-xl shadow-zinc-200/30 dark:shadow-black/30 overflow-hidden group z-10 hover:z-50 cursor-pointer"
+      whileHover="hover"
+      className="relative rounded-2xl border-2 border-[var(--card-border)] bg-[var(--card)] p-6 h-full flex flex-col cursor-pointer overflow-hidden group transition-colors hover:border-[var(--foreground)]"
     >
-      <motion.div
-        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{
-          background: useMotionTemplate`radial-gradient(350px at ${mouseX}px ${mouseY}px, rgba(139,92,246,0.12), transparent 80%)`,
-        }}
-      />
+      {/* Crazy SVG background pattern revealed on hover */}
+      <motion.div 
+        variants={{ hover: { opacity: 0.05, scale: 1.1, rotate: 5 } }}
+        initial={{ opacity: 0, scale: 1, rotate: 0 }}
+        transition={{ duration: 0.4 }}
+        className="absolute inset-0 pointer-events-none z-0"
+      >
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id={`pattern-${course.id}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.5" fill="currentColor" className="text-[var(--foreground)]" />
+              <path d="M10,10 L15,15 M15,10 L10,15" stroke="currentColor" strokeWidth="1" className="text-[var(--foreground)]" />
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="100%" height="100%" fill={`url(#pattern-${course.id})`} />
+        </svg>
+      </motion.div>
 
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-      <div style={{ transform: "translateZ(40px)" }} className="flex items-start justify-between mb-6">
-        <div className={`w-12 h-12 rounded-2xl ${color.bg} flex items-center justify-center border border-white/10 dark:border-white/5 shadow-lg`}>
-          <Icon size={22} strokeWidth={1.75} className={color.text} />
+      <div className="relative z-10 flex items-start justify-between mb-6">
+        <div className={`w-14 h-14 rounded-[14px] flex items-center justify-center border-2 ${iconColor} transform -rotate-3 group-hover:rotate-0 transition-transform`}>
+          <Icon size={24} strokeWidth={2.5} />
         </div>
-
-        <div className="relative w-12 h-12" style={{ transform: "translateZ(20px)" }}>
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
-            <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-200 dark:text-white/5" />
-            <motion.circle
-              cx="24" cy="24" r="22" fill="none" strokeWidth="3"
-              stroke={`url(#grad-${course.id})`}
-              strokeLinecap="round"
-              strokeDasharray={progressRing}
-              initial={{ strokeDashoffset: progressRing }}
-              animate={{ strokeDashoffset: progressOffset }}
-              transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-            />
-            <defs>
-              <linearGradient id={`grad-${course.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#7c3aed" />
-                <stop offset="100%" stopColor="#4f46e5" />
-              </linearGradient>
-            </defs>
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[10px] font-black text-zinc-700 dark:text-zinc-300">{course.progress}%</span>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ transform: "translateZ(50px)" }} className="flex-1">
-        <h3 className="text-base font-black text-zinc-900 dark:text-white mb-1.5 leading-tight line-clamp-2">{course.title}</h3>
-        <p className="text-xs text-zinc-500 dark:text-zinc-500 font-medium mb-5">
-          {course.progress < 50 ? "Just started" : course.progress < 80 ? "Making progress" : "Almost done"} · {Math.round((course.progress / 100) * 24)} hrs
-        </p>
-
-        <div className="space-y-2">
-          <div className="h-1.5 w-full bg-zinc-200/80 dark:bg-white/5 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${course.progress}%` }}
-              transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-              className="h-full rounded-full relative"
-              style={{ background: "linear-gradient(90deg, #7c3aed, #6366f1, #818cf8)" }}
-            >
-              <motion.div
-                animate={{ x: ["-100%", "400%"] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
-                className="absolute inset-y-0 w-16 bg-white/50 blur-[2px] skew-x-[-20deg]"
-              />
-            </motion.div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ transform: "translateZ(30px)" }} className="flex items-center justify-between mt-5 pt-4 border-t border-zinc-200/60 dark:border-white/5">
-        <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-400 dark:text-zinc-600">Continue</span>
-        <motion.div
-          whileHover={{ x: 4 }}
-          className={`w-7 h-7 rounded-full ${color.bg} flex items-center justify-center border border-white/10`}
+        <motion.div 
+          variants={{ hover: { x: 5, opacity: 1 } }}
+          initial={{ x: -10, opacity: 0 }}
+          className="w-10 h-10 rounded-full bg-[var(--foreground)] text-[var(--background)] flex items-center justify-center shadow-md"
         >
-          <ChevronRight size={14} className={color.text} />
+          <ArrowRight size={20} strokeWidth={2.5} />
         </motion.div>
       </div>
-    </motion.article>
+
+      <div className="relative z-10 flex-1">
+        <h3 className="font-black text-xl leading-tight mb-2 group-hover:text-[var(--accent)] transition-colors">{course.title}</h3>
+        <p className="text-sm font-medium text-[var(--muted)]">
+          {Math.round((course.progress / 100) * 24)} of 24 lessons
+        </p>
+      </div>
+
+      <div className="relative z-10 mt-6 pt-5 border-t-2 border-dashed border-[var(--card-border)]">
+        <div className="flex items-end justify-between mb-3">
+          <span className="text-xs font-bold text-[var(--muted)] uppercase tracking-widest">Progress</span>
+          <span className="text-xl font-black tabular-nums leading-none">{course.progress}%</span>
+        </div>
+        
+        {/* SVG Progress Bar for a unique look */}
+        <div className="h-3 w-full relative">
+          <svg className="absolute inset-0 w-full h-full rounded-full" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="currentColor" className="text-neutral-100 dark:text-neutral-800 rounded-full" rx="6" />
+          </svg>
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${course.progress}%` }}
+            transition={{ duration: 1.2, ease: "circOut", delay: 0.1 }}
+            className={`absolute inset-y-0 left-0 ${barColor} rounded-full flex items-center justify-end pr-1`}
+          >
+             {/* Little knob inside the progress bar */}
+            <div className="w-1.5 h-1.5 rounded-full bg-white opacity-80" />
+          </motion.div>
+        </div>
+      </div>
+    </motion.div>
   );
 }
